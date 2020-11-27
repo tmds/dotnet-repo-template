@@ -1,0 +1,8 @@
+<Project>
+  <!-- Package references -->
+  <PropertyGroup>
+    <MicrosoftNETTestSdkVersion>16.6.1</MicrosoftNETTestSdkVersion>
+    <xunitVersion>2.4.1</xunitVersion>
+    <xunitrunnervisualstudioVersion>2.4.3</xunitrunnervisualstudioVersion>
+  </PropertyGroup>
+</Project>

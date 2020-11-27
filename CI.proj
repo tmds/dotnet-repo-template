@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.Build.Traversal" DefaultTargets="Pack;Publish">
+  <PropertyGroup>
+    <Configuration Condition="$(Configuration) == ''">Release</Configuration>
+    <TraversalGlobalProperties>$(TraversalGlobalProperties);Configuration=$(Configuration)</TraversalGlobalProperties>
+    <TraversalGlobalProperties>$(TraversalGlobalProperties);ProductVersion=$(ProductVersion)</TraversalGlobalProperties>
+  </PropertyGroup>
+
+  <!-- Do nothing by default. -->
+  <ItemDefinitionGroup>
+    <ProjectReference Test="false" Pack="false" Publish="false" Build="false"/>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <!-- Src projects: explicit list of projects and whether they should Pack/Publish. -->
+    <ProjectReference Include="src\MyOrg.ClassLib\MyOrg.ClassLib.csproj" Pack="true"/>
+    <ProjectReference Include="src\MyOrg.MainApp\MyOrg.MainApp.csproj" Publish="true" Properties="RuntimeIdentifier=$(WindowsRuntimeIdenfifier)"/>
+    <ProjectReference Include="src\MyOrg.MainApp\MyOrg.MainApp.csproj" Publish="true" Properties="RuntimeIdentifier=$(LinuxRuntimeIdentifier)"/>
+
+    <!-- Test projects: include all projects for running 'dotnet test'. -->
+    <ProjectReference Include="test\*\*.*proj" Test="true" />
+  </ItemGroup>
+
+  <!-- PushPackages: target for pushing packages. -->
+  <Target Name="PushPackages" DependsOnTargets="Pack">
+    <Error Condition="'$(NuGetApiKey)' == ''" Text="PushPackages: NuGetApiKey is not set." />
+    <Error Condition="'$(NuGetServer)' == ''" Text="PushPackages: NuGetServer is not set." />
+    <ItemGroup>
+      <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>
+    </ItemGroup>
+    <Exec Command="dotnet nuget push %(Package.Identity) -k $(NuGetApiKey) -s $(NuGetServer)"/>
+  </Target>
+</Project>

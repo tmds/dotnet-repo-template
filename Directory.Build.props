@@ -1,0 +1,71 @@
+<Project>
+  <!-- Provide RepoRoot to reference file from the repository root -->
+  <PropertyGroup>
+    <RepoRoot>$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)'))</RepoRoot>
+  </PropertyGroup>
+
+  <!-- Extract information from CI system -->
+  <Import Project="CI.props" />
+
+  <!-- Target Frameworks -->
+  <PropertyGroup>
+    <DefaultTargetFramework>net5.0</DefaultTargetFramework>
+    <AppTargetFramework>$(DefaultTargetFramework)</AppTargetFramework>
+    <LibTargetFrameworks>$(DefaultTargetFramework)</LibTargetFrameworks>
+    <TestTargetFrameworks>$(DefaultTargetFramework)</TestTargetFrameworks>
+  </PropertyGroup>
+
+  <!-- Runtime Identifiers -->
+  <PropertyGroup>
+    <WindowsRuntimeIdenfifier>win-x64</WindowsRuntimeIdenfifier>
+    <LinuxRuntimeIdentifier>linux-x64</LinuxRuntimeIdentifier>
+    <DefaultRuntimeIdentifiers>$(WindowsRuntimeIdenfifier);$(LinuxRuntimeIdentifier)</DefaultRuntimeIdentifiers>
+  </PropertyGroup>
+
+  <!-- Product version -->
+  <PropertyGroup Condition="$(ProductVersion) == ''">
+    <ProductVersionPrefix>0.1.0</ProductVersionPrefix>
+    <ProductVersionSuffix>local</ProductVersionSuffix>
+
+    <!--Use CI build number as suffix -->
+    <ProductVersionSuffix Condition="$(ContinuousIntegrationBuildId) == ''">$(ContinuousIntegrationBuildId)</ProductVersionSuffix>
+
+    <ProductVersion>$(ProductVersionPrefix)-$(ProductVersionSuffix)</ProductVersion>
+
+    <!-- Use SourceRevisionTag as ProductVersion -->
+    <ProductVersion Condition="$(SourceRevisionTag) != ''">$(SourceRevisionTag)</ProductVersion>
+  </PropertyGroup>
+  <!-- Derive Version{Prefix,Suffix} from ProductVersion -->
+  <PropertyGroup> 
+    <VersionPrefix>$(ProductVersion.TrimStart('v'))</VersionPrefix>
+    <_hyphenPos>$(VersionPrefix.IndexOf('-'))</_hyphenPos>
+    <VersionSuffix Condition="$(_hyphenPos) != -1">$(VersionPrefix.SubString($([MSBuild]::Add($(_hyphenPos), 1))))</VersionSuffix>
+    <VersionPrefix Condition="$(_hyphenPos) != -1">$(VersionPrefix.Substring(0, $(_hyphenPos)))</VersionPrefix>
+  </PropertyGroup>
+
+  <!-- Configuration -->
+  <PropertyGroup Condition="$(Configuration) == ''">
+    <Configuration>Debug</Configuration>
+    <Configuration Condition="$(ContinuousIntegrationBuild) == 'true'">Release</Configuration>
+  </PropertyGroup>
+
+  <!-- Copyright and License -->
+  <PropertyGroup>
+    <Copyright>Copyright (C)</Copyright>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <!-- <PackageLicenseFile>LICENSE</PackageLicenseFile> -->
+    <!-- or
+  <PackageLicenseExpression>$(DefaultTargetFrameworks)</TestTargetFrameworks>
+  -->
+  </PropertyGroup>
+
+  <!-- Defaults -->
+  <PropertyGroup>
+    <!-- IsShipped can be set to false in a project file to indicate
+                   the artifacts are not meant for publishing. -->
+    <IsShipped>true</IsShipped>
+  </PropertyGroup>
+
+  <Import Project="Versions.props" />
+
+</Project>
