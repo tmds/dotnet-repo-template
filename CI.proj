@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.Build.Traversal" DefaultTargets="Pack;Publish">
   <PropertyGroup>
-    <Configuration Condition="$(Configuration) == ''">Release</Configuration>
+    <Configuration>Release</Configuration>
     <TraversalGlobalProperties>$(TraversalGlobalProperties);Configuration=$(Configuration)</TraversalGlobalProperties>
     <TraversalGlobalProperties>$(TraversalGlobalProperties);ProductVersion=$(ProductVersion)</TraversalGlobalProperties>
   </PropertyGroup>
@@ -26,6 +26,6 @@
     <ItemGroup>
       <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>
     </ItemGroup>
-    <Exec Command="dotnet nuget push %(Package.Identity) -k $(NuGetApiKey) -s $(NuGetServer)"/>
+    <Exec EchoOff="true" Command="dotnet nuget push %(Package.Identity) -k $(NuGetApiKey) -s $(NuGetServer)"/>
   </Target>
 </Project>
