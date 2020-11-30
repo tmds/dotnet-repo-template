@@ -1,0 +1,15 @@
+language: csharp
+mono: none
+dotnet: 5.0
+
+script:
+  - dotnet test
+  - dotnet build
+
+deploy:
+  provider: script
+  edge: true
+  script: dotnet msbuild -t:PushPackages
+  on:
+    branch: main
+    tags: true
