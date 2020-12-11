@@ -2,6 +2,7 @@
   <!-- Provide RepoRoot to reference file from the repository root -->
   <PropertyGroup>
     <RepoRoot>$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)'))</RepoRoot>
+    <RepoScripts>$(RepoRoot)/scripts</RepoScripts>
   </PropertyGroup>
 
   <!-- Extract information from CI system -->

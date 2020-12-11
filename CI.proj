@@ -20,12 +20,13 @@
   </ItemGroup>
 
   <!-- PushPackages: target for pushing packages. -->
-  <Target Name="PushPackages" DependsOnTargets="Pack">
-    <Error Condition="'$(NuGetApiKey)' == ''" Text="PushPackages: NuGetApiKey is not set." />
-    <Error Condition="'$(NuGetServer)' == ''" Text="PushPackages: NuGetServer is not set." />
+  <Target Name="PushPackages" DependsOnTargets="Restore;Pack">
     <ItemGroup>
       <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>
     </ItemGroup>
-    <Exec EchoOff="true" Command="dotnet nuget push %(Package.Identity) -k $(NuGetApiKey) -s $(NuGetServer)"/>
+    <!-- Windows -->
+    <Error Condition=" '$(OS)' != 'Unix' " Text="Push on Windows is not implemented" />
+    <!-- non-Windows -->
+    <Exec Condition=" '$(OS)' == 'Unix' " Command="$(RepoScripts)/push-nuget-package.sh '%(Package.Identity)'" LogStandardErrorAsError="true" StandardOutputImportance="High"/>
   </Target>
 </Project>
