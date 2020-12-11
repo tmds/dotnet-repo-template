@@ -11,5 +11,5 @@ deploy:
   edge: true
   script: dotnet msbuild -t:PushPackages
   on:
-    branch: main
-    tags: true
+    all_branches: true
+    condition: $TRAVIS_BRANCH == "main" || -n $TRAVIS_TAG
