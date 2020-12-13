@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyOrg.ClassLib
+namespace ClassLibTemplate
 {
     public class Class1
     {

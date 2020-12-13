@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace MyOrg.ClassLib.Tests
+namespace ClassLibTemplate.Tests
 {
     public class UnitTest1
     {

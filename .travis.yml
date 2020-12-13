@@ -9,7 +9,7 @@ script:
 deploy:
   provider: script
   edge: true
-  script: dotnet msbuild -t:PushPackages
+  script: dotnet msbuild -t:Deploy
   on:
     all_branches: true
     condition: $TRAVIS_BRANCH == "main" || -n $TRAVIS_TAG

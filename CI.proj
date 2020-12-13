@@ -11,22 +11,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <!-- Src projects: explicit list of projects and whether they should Pack/Publish. -->
-    <ProjectReference Include="src\MyOrg.ClassLib\MyOrg.ClassLib.csproj" Pack="true"/>
-    <ProjectReference Include="src\MyOrg.MainApp\MyOrg.MainApp.csproj" Publish="true" Properties="RuntimeIdentifier=$(WindowsRuntimeIdenfifier)"/>
-    <ProjectReference Include="src\MyOrg.MainApp\MyOrg.MainApp.csproj" Publish="true" Properties="RuntimeIdentifier=$(LinuxRuntimeIdentifier)"/>
+    <ProjectReference Include="src\ClassLibTemplate\ClassLibTemplate.csproj" Pack="true"/>
+    <ProjectReference Include="src\AppTemplate\AppTemplate.csproj" Publish="true" Properties="RuntimeIdentifier=$(WindowsRuntimeIdenfifier)"/>
+    <ProjectReference Include="src\AppTemplate\AppTemplate.csproj" Publish="true" Properties="RuntimeIdentifier=$(LinuxRuntimeIdentifier)"/>
 
     <!-- Test projects: include all projects for running 'dotnet test'. -->
     <ProjectReference Include="test\*\*.*proj" Test="true" />
   </ItemGroup>
 
-  <!-- PushPackages: target for pushing packages. -->
-  <Target Name="PushPackages" DependsOnTargets="Restore;Pack">
+  <Target Name="Deploy" DependsOnTargets="Restore;Pack">
+    <!-- Push packages -->
     <ItemGroup>
       <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>
     </ItemGroup>
     <!-- Windows -->
     <Error Condition=" '$(OS)' != 'Unix' " Text="Push on Windows is not implemented" />
     <!-- non-Windows -->
-    <Exec Condition=" '$(OS)' == 'Unix' " Command="$(RepoScripts)/push-nuget-package.sh '%(Package.Identity)'" LogStandardErrorAsError="true" StandardOutputImportance="High"/>
+    <Exec Condition=" '$(OS)' == 'Unix' " Command="$(RepoTools)/push-nuget-package.sh '%(Package.Identity)'" LogStandardErrorAsError="true" StandardOutputImportance="High"/>
   </Target>
 </Project>
