@@ -1,5 +1,5 @@
 <Project>
-  <!-- Package references -->
+  <!-- Versions for package references -->
   <PropertyGroup>
     <MicrosoftNETTestSdkVersion>16.6.1</MicrosoftNETTestSdkVersion>
     <xunitVersion>2.4.1</xunitVersion>

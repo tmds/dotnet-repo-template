@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <!-- Travis: https://docs.travis-ci.com/user/environment-variables/ -->
-  <PropertyGroup Condition="$(TRAVIS) == 'true'">
+  <PropertyGroup Condition="'$(TRAVIS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <ContinuousIntegrationBuildId>$(TRAVIS_BUILD_NUMBER)</ContinuousIntegrationBuildId>
     <SourceRevisionId>$(TRAVIS_COMMIT)</SourceRevisionId>

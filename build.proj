@@ -25,8 +25,10 @@
       <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>
     </ItemGroup>
     <!-- Windows -->
-    <Error Condition=" '$(OS)' != 'Unix' " Text="Push on Windows is not implemented" />
+    <Error Condition="'$(OS)' != 'Unix'" Text="Push on Windows is not implemented" />
     <!-- non-Windows -->
-    <Exec Condition=" '$(OS)' == 'Unix' " Command="$(RepoTools)/push-nuget-package.sh '%(Package.Identity)'" LogStandardErrorAsError="true" StandardOutputImportance="High"/>
+    <Exec Condition="'$(OS)' == 'Unix'" Command="$(RepoTools)push-nuget-package.sh '%(Package.Identity)'"
+                                        EnvironmentVariables="NuGetPushServer=$(NuGetPushServer)"
+                                        LogStandardErrorAsError="true" StandardOutputImportance="High"/>
   </Target>
 </Project>

@@ -2,11 +2,16 @@
   <!-- Provide RepoRoot to reference file from the repository root -->
   <PropertyGroup>
     <RepoRoot>$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)'))</RepoRoot>
-    <RepoTools>$(RepoRoot)/tools</RepoTools>
+    <RepoTools>$(RepoRoot)tools/</RepoTools>
   </PropertyGroup>
 
   <!-- Extract information from CI system -->
-  <Import Project="CI.props" />
+  <Import Project="$(RepoTools)CI.props" />
+
+  <!-- Server for pushing nuget packages -->
+  <PropertyGroup>
+    <NuGetPushServer>https://www.myget.org/F/tmds/api/v3/index.json</NuGetPushServer>
+  </PropertyGroup>
 
   <!-- Target Frameworks -->
   <PropertyGroup>
@@ -24,31 +29,7 @@
   </PropertyGroup>
 
   <!-- Product version -->
-  <PropertyGroup Condition="$(ProductVersion) == ''">
-    <ProductVersionPrefix>0.1.0</ProductVersionPrefix>
-    <ProductVersionSuffix>local</ProductVersionSuffix>
-
-    <!--Use CI build number as suffix -->
-    <ProductVersionSuffix Condition="$(ContinuousIntegrationBuildId) == ''">$(ContinuousIntegrationBuildId)</ProductVersionSuffix>
-
-    <ProductVersion>$(ProductVersionPrefix)-$(ProductVersionSuffix)</ProductVersion>
-
-    <!-- Use SourceRevisionTag as ProductVersion -->
-    <ProductVersion Condition="$(SourceRevisionTag) != ''">$(SourceRevisionTag)</ProductVersion>
-  </PropertyGroup>
-  <!-- Derive Version{Prefix,Suffix} from ProductVersion -->
-  <PropertyGroup> 
-    <VersionPrefix>$(ProductVersion.TrimStart('v'))</VersionPrefix>
-    <_hyphenPos>$(VersionPrefix.IndexOf('-'))</_hyphenPos>
-    <VersionSuffix Condition="$(_hyphenPos) != -1">$(VersionPrefix.SubString($([MSBuild]::Add($(_hyphenPos), 1))))</VersionSuffix>
-    <VersionPrefix Condition="$(_hyphenPos) != -1">$(VersionPrefix.Substring(0, $(_hyphenPos)))</VersionPrefix>
-  </PropertyGroup>
-
-  <!-- Configuration -->
-  <PropertyGroup Condition="$(Configuration) == ''">
-    <Configuration>Debug</Configuration>
-    <Configuration Condition="$(ContinuousIntegrationBuild) == 'true'">Release</Configuration>
-  </PropertyGroup>
+  <Import Project="Version.props" />
 
   <!-- Copyright and License -->
   <PropertyGroup>
@@ -60,6 +41,12 @@
   -->
   </PropertyGroup>
 
+  <!-- Configuration -->
+  <PropertyGroup Condition="'$(Configuration)' == ''">
+    <Configuration>Debug</Configuration>
+    <Configuration Condition="'$(ContinuousIntegrationBuild)' == 'true'">Release</Configuration>
+  </PropertyGroup>
+
   <!-- Defaults -->
   <PropertyGroup>
     <!-- IsShipped can be set to false in a project file to indicate
@@ -67,6 +54,6 @@
     <IsShipped>true</IsShipped>
   </PropertyGroup>
 
-  <Import Project="Versions.props" />
+  <Import Project="PackageVersions.props" />
 
 </Project>
