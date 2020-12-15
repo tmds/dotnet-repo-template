@@ -19,7 +19,7 @@
     <ProjectReference Include="test\*\*.*proj" Test="true" />
   </ItemGroup>
 
-  <Target Name="Deploy" DependsOnTargets="Restore;Pack">
+  <Target Name="PushPackages" DependsOnTargets="Restore;Pack">
     <!-- Push packages -->
     <ItemGroup>
       <Package Include="$(ReleasePackageOutputPath)\*.nupkg"/>

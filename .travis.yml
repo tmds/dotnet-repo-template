@@ -14,9 +14,19 @@ script:
   - dotnet build
 
 deploy:
-  provider: script
-  edge: true
-  script: dotnet msbuild -t:Deploy
-  on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH == "main" || -n $TRAVIS_TAG
+  - provider: script
+    edge: true
+    script: dotnet msbuild -t:PushPackages
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH == "main" || -n $TRAVIS_TAG
+  - provider: releases
+    edge: true
+    file: artifacts/packages/Release/*.nupkg
+    token:
+      # Create 'Personal access token' with 'pubic_repo' scope
+      # travis encrypt deadbeef7000c23bcef2
+       secure: "dZHeDtuXM9OmmXJe8uLXa1WdW0hbtq8hCIRRlJn+l2nYjkX3/MYErquwm8b2OLiyf22u0Idst4LfYqq4WkUEKlO9J7RJGSxBYGFieU/rN0dXl0GJo7N+2lc/MsOmthutWQn9fsPuXfjo+A0pR7GQw8ZNJ5S9gvRgQmWRSRPn2t39RyMtHy7Pzc9GpHMB+h9tjTfmtZZ5/A9eDBkP366APEcOvQ2e2vQZwVhiXaaClcT/ScomVW5ouT6WZ2cy2/6O3z4RNOvEbYc0xAt1DMez7N2HmPc+uEyDN29jNJfKsFcWZVz2EZJNPZm0TlsjqlNe5TRvExFisvQHMhI3xck4UNRH6xK8ihmC7b8Dk9Ps+tzyrCi3S2dI0vCLuzIYqG1w7vroGBnbYjMhKDvCfGeuPmIhpDC8TKQL65Ok1neIL4GQRdwSvqZQduBjxVwLwMlp8xOP2Xb1CK3Mb1bQbO5L/v6v7TepA544z0f8dlT6/fVreg1ApGyRM4ucaKSNUhxMVuCtEfa4Um7HNxOKffbTaNbkS/1Ya+YZrSAuZkSAKTvfwH2QofAhIKLgk/0ymgm1/ZtPEFnRfJjk/yaGJiDQ3nqWTRhxjj/EtRP2A36FgetFSzCwu0Oi9JPnnvvXEMygkekEuizrFggNeYM33FmbagkaHzxwurZ1fWVntPbbFlM="
+    draft: true
+    on:
+      tags: true
