@@ -37,7 +37,7 @@
     <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <!-- <PackageLicenseFile>LICENSE</PackageLicenseFile> -->
     <!-- or
-  <PackageLicenseExpression>$(DefaultTargetFrameworks)</TestTargetFrameworks>
+  <PackageLicenseExpression>...</PackageLicenseExpression>
   -->
   </PropertyGroup>
 
