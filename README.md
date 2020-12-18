@@ -5,6 +5,7 @@ This is a template repository for repositories with .NET code.
 ## Contributors
 
 [Tom Deseyn](https://github.com/tmds/)
+[Omair Majid](https://github.com/omajid/)
 
 ## Using this template
 
@@ -21,6 +22,94 @@ git add -A
 ## CI
 
 This section provides instructions on how you can enable CI for your repository.
+
+### Github Actions
+
+These are instructions when using [Github
+Actions](https://docs.github.com/en/free-pro-team@latest/actions).
+
+The following configuration shows how to:
+
+* Upload nuget packages to a NuGet feed for tags, and commits on `main` branch.
+* Create draft releases on GitHub when pushing a tag
+
+  This requires adding a secret named `NUGET_API_KEY` to your
+  repository on GitHub.
+
+  Add a `.github/workflows/ci.yml` to your repository:
+
+  ``` yml
+  name: Build, test and publish NuGet packages and possibly create a release
+
+  on:
+    push:
+      branches: [ main ]
+      tags:
+        - '*'
+
+  jobs:
+    build:
+      name: Build, test and publish NuGet package
+
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: '5.0.x'
+
+        - name: Build
+          run: dotnet build
+
+        - name: Test
+          run: dotnet test
+
+        - name: Publish packages
+          run: dotnet msbuild -t:PushPackages
+          env:
+            NuGetApiKey: ${{ secrets.NUGET_API_KEY }}
+
+        - name: Find packages
+          id: package
+          run: |
+            set -euo pipefail
+            FILE_PATH=$(ls artifacts/packages/Release/*nupkg)
+            PACKAGE_NAME=$(basename $FILE_PATH)
+            echo "::set-output name=release_file_path::$FILE_PATH"
+            echo "::set-output name=release_package_name::$PACKAGE_NAME"
+
+        - name: Create Release
+          if: startsWith(github.ref, 'refs/tags/')
+          id: create_release
+          uses: actions/create-release@v1
+          env:
+            # This token is provided by Actions, you do not need to create your own token
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: Release ${{ github.ref }}
+            body: |
+              Changes in this Release
+              - First Change
+              - Second Change
+            draft: true
+            prerelease: false
+
+        - name: Upload Release Asset
+          if: startsWith(github.ref, 'refs/tags/')
+          uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: ${{ steps.package.outputs.release_file_path }}
+            asset_name: ${{ steps.package.outputs.release_package_name }}
+            asset_content_type: application/zip
+  ```
 
 ### Travis
 
@@ -66,8 +155,8 @@ env:
     secure: vC9QTxXicRgN3ij5n5qjq7RntLjQ9dy3JjwYBi/rtcublwnaA2OryLYG+s4sXGSlyk9tBdsWg8kt+VEqiF1cDQy76iYpTSd06CZ/EJqrqrwYTiGHi7kAbZCrRVjwDnYsjHNlzEY9P8Te1YPtdaIabJN7TAQT+amcH047nw9eNZEQWhrsso7quE+C2GAJaz3ANtdpcdHGIdfrEJ636hRRVd3H9ZYnVUO8eqXds6v6t/jhCvLBRbB/bFSk0RRC50JwUJpBdM14pH16pYfSZwKV+rtodUnSzga5LY+dFUoQj2ymDMkNiaOAopNy0OB+E45BXNGPBahBihkRlgs87KazVkWbdsM6ctBqBF97tiwA8joo/0mSJuzBwYEQLLxXx5n8BHzUpBhU+h3R2BWm1WsOD786/j4Cj92w30bpj6RpDyVRaNPL69hJRSD+7+2j/N/FoJHrUFNe20b+BYr5dwCFMHPO4INGjqQsP7zUmPtpAAMNeINJ4zh3Ee62j2siI6Vz7ZJL24su4VrHXb5hZWqwMF0RNgDvOzB0P5ZuI9usv6Le/EydJkhr+zH9kBlSPsxujWcpt6+OaUPm8DIO89hzA48As+jJf4tBmrgwuNLb7av/ZuxI9Hp7ifQzArWB3yFkIW25mwthX6hysV1k9ch9yirmHDtkdUj/qE2yl9DUcwk=
 
 script:
-  - dotnet test
   - dotnet build
+  - dotnet test
 
 deploy:
   - provider: script
