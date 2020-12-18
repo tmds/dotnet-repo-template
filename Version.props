@@ -3,7 +3,7 @@
     <ProductVersionPrefix>0.1.0</ProductVersionPrefix>
     <!--Use CI build number as suffix -->
     <ProductVersionSuffix>local</ProductVersionSuffix>
-    <ProductVersionSuffix Condition="'$(ContinuousIntegrationBuildId)' == ''">$(ContinuousIntegrationBuildId)</ProductVersionSuffix>
+    <ProductVersionSuffix Condition="'$(ContinuousIntegrationBuildId)' != ''">$(ContinuousIntegrationBuildId)</ProductVersionSuffix>
     <ProductVersion>$(ProductVersionPrefix)-$(ProductVersionSuffix)</ProductVersion>
 
     <!-- Use SourceRevisionTag as ProductVersion -->
