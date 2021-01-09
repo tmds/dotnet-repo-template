@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <!-- Prefix ContinuousIntegrationBuildVersion for additional level of versioning -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuildId)' != ''">
     <ContinuousIntegrationBuildId>$(ContinuousIntegrationBuildVersion).$(ContinuousIntegrationBuildId)</ContinuousIntegrationBuildId>
   </PropertyGroup>
 </Project>
